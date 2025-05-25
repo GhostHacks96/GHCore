@@ -1,0 +1,58 @@
+package me.ghosthacks96.spigot.dependant;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+
+import java.util.function.BiConsumer;
+
+public class GHCommand {
+
+    private final String cmd;
+    private final String desc;
+    private final String permission;
+    private final String usage;
+    private final boolean playerOnly;
+    private BiConsumer<CommandSender, String[]> execute;
+
+    public GHCommand(String cmd, String desc, String permission, String usage, boolean playerOnly) {
+        this.cmd = cmd;
+        this.desc = desc;
+        this.permission = permission;
+        this.usage = usage;
+        this.playerOnly = playerOnly;
+    }
+
+    public String getCmd() {
+        return cmd;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public String getUsage() {
+        return usage;
+    }
+
+    public boolean isPlayerOnly() {
+        return playerOnly;
+    }
+
+    public void setExecute(BiConsumer<CommandSender, String[]> execute) {
+        this.execute = execute;
+    }
+
+    public void execute(CommandSender sender, String[] args) {
+        if (execute != null) {
+            execute.accept(sender, args);
+        } else {
+            sender.sendMessage("Error: Command not registered!");
+        }
+    }
+
+
+}

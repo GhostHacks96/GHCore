@@ -1,0 +1,9 @@
+name: GHCore
+version: '1.0'
+main: me.ghosthacks96.spigot.GHCore
+api-version: '1.21'
+commands:
+    ghcore:
+      description: 'Base Command'
+      usage: '/ghcore <subCommand>'
+      
