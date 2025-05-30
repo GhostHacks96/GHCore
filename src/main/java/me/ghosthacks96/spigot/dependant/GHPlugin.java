@@ -28,6 +28,8 @@ public abstract class GHPlugin {
      */
     public void onDisable() {
         getLogger().log(Level.INFO,prefix,getName() + " module disabled!");
+        corePlugin.pluginRegistery.unregisterPlugin(this);
+        corePlugin.commandManager.unregisterCommand(this,getCommandName());
         cleanup();
     }
 
@@ -65,6 +67,7 @@ public abstract class GHPlugin {
      * @return Module name.
      */
     public abstract String getName();
+    public abstract String getCommandName();
 
     /**
      * Get module version.

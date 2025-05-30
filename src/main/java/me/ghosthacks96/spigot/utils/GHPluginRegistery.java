@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class GHPluginRegistery {
 
-    ArrayList<GHPlugin> registeredPlugins = new ArrayList<GHPlugin>();
+    public ArrayList<GHPlugin> registeredPlugins = new ArrayList<GHPlugin>();
 
     public void registerPlugin(GHPlugin plugin){
         registeredPlugins.add(plugin);

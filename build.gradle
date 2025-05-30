@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
+    id 'maven-publish'
 }
 
 group = 'me.ghosthacks96.spigot'
@@ -16,11 +17,18 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven { url = 'https://repo.dmulloy2.net/repository/public/' }
 }
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly "mysql:mysql-connector-java:8.0.33"
+    compileOnly 'com.comphenix.protocol:ProtocolLib:5.3.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+tasks.jar {
+    exclude("docs/**")
 }
 
 tasks {
@@ -56,5 +64,25 @@ processResources {
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
         expand props
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            // Customize the metadata
+            groupId = 'me.ghosthacks96.spigot'
+            artifactId = 'ghcore'
+            version = '1.0.0'
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'localRepo'
+            url = uri("C:\\Users\\ghost\\.m2\\repository\\") // This creates a "local-repo" directory in the project
+        }
     }
 }
