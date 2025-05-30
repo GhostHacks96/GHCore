@@ -1,0 +1,9 @@
+[
+  {
+    "name": "GUI Config",
+    "version": "1.0.0",
+    "description": "Adds Gui config adjuster",
+    "tags": ["gui","config_modifier"],
+    "url": "https://raw.githubusercontent.com/GhostHacks96/GHCore/modules/GH_Config_GUI.jar"
+  }
+]
