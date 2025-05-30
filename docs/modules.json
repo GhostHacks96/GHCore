@@ -4,6 +4,13 @@
     "version": "1.0.0",
     "description": "Adds Gui config adjuster",
     "tags": ["gui","config_modifier"],
-    "url": "https://raw.githubusercontent.com/GhostHacks96/GHCore/master/docs/modules/GH_Config_GUI.jar\n"
+    "url": "https://raw.githubusercontent.com/GhostHacks96/GHCore/master/docs/modules/GH_Config_GUI.jar"
+  },
+  {
+    "name": "Tombs",
+    "version": "1.0.0",
+    "description": "Adds virtual tombs",
+    "tags": ["death-inv","tombstones"],
+    "url": "https://raw.githubusercontent.com/GhostHacks96/GHCore/master/docs/modules/Tombs.jar"
   }
 ]
