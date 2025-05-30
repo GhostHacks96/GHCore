@@ -3,6 +3,7 @@ package me.ghosthacks96.spigot.commands;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import me.ghosthacks96.spigot.GHCore;
+import me.ghosthacks96.spigot.cloudAPI.ModInfo;
 import me.ghosthacks96.spigot.dependant.GHCommand;
 import me.ghosthacks96.spigot.utils.CommandManager;
 import org.bukkit.Bukkit;
@@ -16,13 +17,16 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class SubCommands {
+    GHCore core;
     CommandManager CMD_Manag;
 
     public SubCommands(CommandManager CMD_M){
+        this.core = GHCore.get();
         this.CMD_Manag = CMD_M;
     }
 
@@ -53,6 +57,20 @@ public class SubCommands {
                 false
         );
 
+        cmd.setTabList((commandSender, strings) -> {
+            if (strings.length == 2) {
+                return List.of("search", "get");
+            }else if(strings.length == 3){
+                List<String> list = new ArrayList<>();
+                for(ModInfo mi : core.cloudAPI.modList){
+                    if(!list.contains(mi.getName())) list.add(mi.getName());
+                }
+                return list;
+            }else {
+                return List.of();
+            }
+        });
+
         cmd.setExecute((sender, args) -> {
             if (!(sender.hasPermission("ghcore.search") || sender.isOp())) {
                 sender.sendMessage(GHCore.get().prefix + ChatColor.RED + "You do not have permission to use this command!");
@@ -78,7 +96,7 @@ public class SubCommands {
 
             switch (subcommand) {
                 case "search":
-                    searchModules(sender, term);
+                    core.cloudAPI.searchModules(sender, term);
                     break;
 
                 case "get":
@@ -90,7 +108,7 @@ public class SubCommands {
                         }
                         term = sb.toString();
                     }
-                    downloadModule(term);
+                    core.cloudAPI.downloadModule(sender,term);
                     break;
 
                 default:
@@ -102,88 +120,6 @@ public class SubCommands {
         CMD_Manag.registerCommand(null, cmd);
     }
 
-
-    public void downloadModule(String name) {
-        Bukkit.getScheduler().runTaskAsynchronously(GHCore.get(), () -> {
-            try {
-                URL url = new URL("https://raw.githubusercontent.com/GhostHacks96/GHCore/refs/heads/master/docs/modules.json");
-                InputStreamReader reader = new InputStreamReader(url.openStream());
-                Type moduleListType = new TypeToken<List<Map<String, Object>>>() {}.getType();
-                List<Map<String, Object>> modules = new Gson().fromJson(reader, moduleListType);
-
-                boolean found = false;
-
-                for (Map<String, Object> mod : modules) {
-                    String modName = String.valueOf(mod.getOrDefault("name", "")).toLowerCase();
-                    List<String> tagsList = (List<String>) mod.getOrDefault("tags", List.of());
-                    String tags = String.join(",", tagsList).toLowerCase();
-
-                    if (modName.contains(name.toLowerCase()) || tags.contains(name.toLowerCase()) || name.equalsIgnoreCase("all")) {
-                        String downloadUrl = String.valueOf(mod.get("url"));
-                        String fileName = downloadUrl.substring(downloadUrl.lastIndexOf("/") + 1);
-                        File pluginDir = new File(GHCore.get().getDataFolder(), "modules");
-                        if (!pluginDir.exists()) pluginDir.mkdirs();
-                        File outFile = new File(pluginDir, fileName);
-
-                        try (InputStream in = new URL(downloadUrl).openStream()) {
-                            Files.copy(in, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                        }
-
-                        Bukkit.getScheduler().runTask(GHCore.get(), () -> {
-                            Bukkit.getConsoleSender().sendMessage(GHCore.get().prefix + ChatColor.GREEN + "Downloaded module: " + fileName);
-                        });
-
-                        found = true;
-                    }
-                }
-
-                if (!found) {
-                    Bukkit.getScheduler().runTask(GHCore.get(), () -> {
-                        Bukkit.getConsoleSender().sendMessage(GHCore.get().prefix + ChatColor.RED + "No module found with that name or tag.");
-                    });
-                }
-
-            } catch (Exception e) {
-                Bukkit.getScheduler().runTask(GHCore.get(), () -> {
-                    Bukkit.getConsoleSender().sendMessage(GHCore.get().prefix + ChatColor.DARK_RED + "Error downloading module.");
-                });
-                e.printStackTrace();
-            }
-        });
-    }
-
-
-    public void searchModules(CommandSender sender, String query){
-        try {
-            URL url = new URL("https://raw.githubusercontent.com/GhostHacks96/GHCore/refs/heads/master/docs/modules.json");
-            InputStreamReader reader = new InputStreamReader(url.openStream());
-            Type moduleListType = new TypeToken<List<Map<String, Object>>>(){}.getType();
-            List<Map<String, Object>> modules = new Gson().fromJson(reader, moduleListType);
-
-            boolean found = false;
-
-            sender.sendMessage(GHCore.get().prefix + "====== Module List ======");
-            for (Map<String, Object> mod : modules) {
-                String name = String.valueOf(mod.getOrDefault("name", "")).toLowerCase();
-                String desc = String.valueOf(mod.getOrDefault("description", "")).toLowerCase();
-                List<String> tagsList = (List<String>) mod.getOrDefault("tags", List.of());
-                String tags = String.join(",", tagsList).toLowerCase();
-
-                if (query.equalsIgnoreCase("all")||name.contains(query) || desc.contains(query) || tags.contains(query)) {
-                    sender.sendMessage(ChatColor.AQUA +""+ mod.get("name") +" "+ ChatColor.GREEN + mod.get("description"));
-                    found = true;
-                }
-            }
-
-            if (!found) {
-                sender.sendMessage(GHCore.get().prefix + "No modules found matching your search.");
-            }
-
-        } catch (Exception e) {
-            sender.sendMessage(GHCore.get().prefix +ChatColor.DARK_RED+ "Error fetching module list.");
-            e.printStackTrace();
-        }
-    }
 
     public void disableModules(){
 

@@ -88,6 +88,15 @@ public class CommandManager {
         return false;
     }
 
+    public GHCommand getCommand(String commandName) {
+        for (GHCommand registeredCommand : registeredCommands) {
+            if (registeredCommand.getCmd().equalsIgnoreCase(commandName)) {
+                return registeredCommand;
+            }
+        }
+        return null;
+    }
+
     public ArrayList<GHCommand> getRegisteredCommands() {
         return new ArrayList<>(registeredCommands); // Return a copy to prevent modification
     }

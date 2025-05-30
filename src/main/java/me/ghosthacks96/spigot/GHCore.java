@@ -1,11 +1,11 @@
 package me.ghosthacks96.spigot;
 
+import me.ghosthacks96.spigot.cloudAPI.CloudAPI;
 import me.ghosthacks96.spigot.commands.CoreCommand;
 import me.ghosthacks96.spigot.commands.GHTabCompleter;
 import me.ghosthacks96.spigot.dependant.GHPlugin;
 import me.ghosthacks96.spigot.utils.*;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,6 +29,7 @@ public final class GHCore extends JavaPlugin {
     public static GHPluginRegistery pluginRegistery = new GHPluginRegistery();
     public static CommandManager commandManager;
     public static TabCompleter tabCompleter;
+    public static CloudAPI cloudAPI;
 
     public static GHCore get() {
         return instance;
@@ -53,6 +54,7 @@ public final class GHCore extends JavaPlugin {
 
         logger = new LoggerUtil(this);
 
+        cloudAPI = new CloudAPI(this);
         guiUtil = new GuiManager(this);
         eventsUtil = new EventsManager(this);
         commandManager = new CommandManager(this);
@@ -117,7 +119,7 @@ public final class GHCore extends JavaPlugin {
                     e.printStackTrace();
                 }
             } else {
-               if(debug) logger.log(Level.WARNING, prefix, "Ignored non-JAR file: " + f.getName());
+               if(debug) logger.log(Level.WARNING, prefix, "Ignored non-JAR file: " + f.getAbsolutePath());
             }
         }
     }

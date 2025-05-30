@@ -20,6 +20,7 @@ public class GHTabCompleter implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        // /<base> <tab>
         if (args.length == 1) {
             List<String> completions = new ArrayList<>();
             for (GHCommand cmd : cmdManager.getRegisteredCommands()) {
@@ -32,7 +33,17 @@ public class GHTabCompleter implements TabCompleter {
             return completions;
         }
 
-        // Future: Add deeper tab support for specific subcommands (args.length >= 2)
+        // /<base> <command> <...>
+        if (args.length >= 2) {
+            GHCommand subCmd = cmdManager.getCommand(args[0]);
+            if (subCmd != null) {
+                List<String> tabbed = subCmd.getTabList(sender, args);
+                if (tabbed != null) {
+                    return tabbed;
+                }
+            }
+        }
+
         return Collections.emptyList();
     }
 }
